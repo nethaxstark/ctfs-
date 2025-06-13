@@ -1,0 +1,46 @@
+----------------                               ------------------
+               :::::::::::;| AGENT T |;::::::::::::
+
+
+1) DEPLOY THE MACHINE AND GET READY.
+
+TASK - 1 (RECON)
+
+1. Quick scan:
+nmap -Pn <ip> -vv
+"Ports 22/SSH and 80/HTTP open"
+
+2. Web check:
+http://<ip> shows "Agent T" page
+"View source reveals /login.php"
+
+"Default creds admin:admin don't work"
+
+----------TASK 1 COMPLETED----------
+
+TASK - 2 (WEB EXPLOIT)
+
+1. SQLi test:
+"Try ' OR 1=1-- - in login form"
+"Bypasses auth - dashboard accessed"
+
+2. Find upload feature:
+"Can upload .txt files"
+"Change to .php and upload shell"
+
+----------TASK 2 COMPLETED-----------
+ 
+TASK - 3 (PRIV ESC)
+
+1. Get shell:
+nc -lvnp 4444
+"Trigger shell at /uploads/"
+"www-data shell obtained"
+
+2. Check sudo -l:
+"Can run /usr/bin/python3 as root"
+"Python can spawn root shells"
+
+-------------------                                                --------------------
+             -----------                                    ------------
+                  ---------- AGENT T TERMINATED ----------
