@@ -1,0 +1,37 @@
+----------------                               ------------------
+               :::::::::::;| BROOKLYN NINE NINE |;::::::::::::
+
+
+1) FIRST WE HAVE TO ACCES THE TRYHACKME FROM OPENVPN.
+2) WE HAVE TO JOIN THE ROOM "BROOKLYN NINE NINE".
+ 
+TASK - 1 (RECON)
+
+1. SCAN THE MACHNE.
+
+    namp -Pn <ip>
+
+    nmap -A -T 5 <ip> -vv
+
+"it's a Linux machine".
+
+2. How many ports are open?
+ANS: 3 ports (21/FTP, 22/SSH, 80/HTTP).
+
+3. What's on port 21?
+ANS: FTP allows anonymous login! NICE!
+
+----------TASK 1 COMPLETED----------
+
+TASK - 2 (FTP EXPLOIT)
+
+1. LOGIN ANONYMOUS.
+
+    ftp <ip>
+    Username: anonymous
+    Password: (press enter)
+    "FOUND note_to_jake.txt - DOWNLOAD IT!"
+
+2. READ NOTE.
+
+    get note_to_jake
